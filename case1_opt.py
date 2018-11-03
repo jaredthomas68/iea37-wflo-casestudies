@@ -4,7 +4,7 @@ import sys
 import yaml                             # For reading .yaml files
 from math import radians as DegToRad    # For converting degrees to radians
 from openmdao.api import Problem, Group, Component, pyOptSparseDriver, IndepVarComp, ExecComp
-from plantenergy.GeneralWindFarmComponents import BoundaryComp, SpacingComp
+from plantenergy.GeneralWindFarmComponents import BoundaryComp, SpacingComp, config
 
 from iea37aepcalc_wec import *
 
@@ -64,6 +64,7 @@ class AEPcomp(Component):
         AEP = calcAEP(turb_coords, wind_freq, wind_speed, wind_dir,
                         turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, rel_fac)
 
+        config.obj_func_calls += 1
         unknowns['AEP'] = np.sum(AEP)
         unknowns['dirPowers'] = AEP
 
@@ -82,6 +83,9 @@ if __name__ == "__main__":
 
     For Python .yaml capability, in the terminal type "pip install pyyaml".
     """
+    global func_calls
+    func_calls = 0
+
     input_val = sys.argv[1]
     nTurbines = int(input_val)
     loc_file = 'iea37-ex%i.yaml' % nTurbines
@@ -187,8 +191,13 @@ if __name__ == "__main__":
     AEP = prob['AEP']
 
     outfilename = 'case1_loc_turbs%i.txt' % nTurbines
-    np.savetxt(outfilename, np.c_[prob['turbineX'], prob['turbineY'], prob['windDirection'], prob['dirPowers']], header='X, Y, direction, dir power')
-
+    print(AEP)
+    print('ndirs:', wind_dir.size)
+    print(config.obj_func_calls)
+    np.savetxt(outfilename, np.c_[prob['turbineX'], prob['turbineY']], header='X, Y, direction, dir power, aep, fcalls')
+    print('dirc, pow:', np.c_[prob['windDirection'], prob['dirPowers']])
+    print('AEP:', prob['AEP'])
+    print('Func calls:', config.obj_func_calls)
     # Print AEP for each binned direction, with 5 digits behind the decimal.
     print(np.array2string(AEP, precision=5, floatmode='fixed',
                           separator=', ', max_line_width=62))
