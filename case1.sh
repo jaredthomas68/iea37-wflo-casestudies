@@ -8,7 +8,7 @@
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
-#SBATCH --array=16,36,64     # job array of size 100
+#SBATCH --array=16,36,64 -N1 tmp    # job array of size 100
 
 echo ${SLURM_ARRAY_TASK_ID}
 
