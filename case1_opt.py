@@ -186,8 +186,9 @@ if __name__ == "__main__":
         prob.driver.opt_settings['Summary file'] = 'SNOPT_summary_case1_turbs%i_rel%.2f.out' % (nTurbines, rel_fac)
         prob['rel_fac'] = rel_fac
         print('starting rel fac:', rel_fac)
-        prob.run_once()
-    # prob.run_once()
+        prob.run()
+        # prob.run_once()
+        print('AEP, ef:', prob['AEP'], rel_fac)
     AEP = prob['AEP']
 
     outfilename = 'case1_loc_turbs%i.txt' % nTurbines

@@ -12,4 +12,4 @@
 
 echo ${SLURM_ARRAY_TASK_ID}
 
-mpirun python case1_opt.py ${SLURM_ARRAY_TASK_ID}
+python case1_opt.py ${SLURM_ARRAY_TASK_ID}
