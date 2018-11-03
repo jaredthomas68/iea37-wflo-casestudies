@@ -36,6 +36,7 @@ class AEPcomp(Component):
         self.add_param('rel_fac', val=1.0)
 
         self.add_output('AEP', val=0.0)
+        self.add_output('dirPowers', val=np.zeros(nDirections))
 
     def solve_nonlinear(self, params, unknowns, resids):
         # Turbine properties
@@ -64,6 +65,7 @@ class AEPcomp(Component):
                         turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, rel_fac)
 
         unknowns['AEP'] = np.sum(AEP)
+        unknowns['dirPowers'] = AEP
 
     def linearize(self, params, unknowns, resids):
 
@@ -180,9 +182,12 @@ if __name__ == "__main__":
         prob.driver.opt_settings['Summary file'] = 'SNOPT_summary_case1_turbs%i_rel%.2f.out' % (nTurbines, rel_fac)
         prob['rel_fac'] = rel_fac
         print('starting rel fac:', rel_fac)
-        prob.run()
+        prob.run_once()
     # prob.run_once()
     AEP = prob['AEP']
+
+    outfilename = 'case1_loc_turbs%i.txt' % nTurbines
+    np.savetxt(outfilename, np.c_[prob['turbineX'], prob['turbineY'], prob['windDirection'], prob['dirPowers']], header='X, Y, direction, dir power')
 
     # Print AEP for each binned direction, with 5 digits behind the decimal.
     print(np.array2string(AEP, precision=5, floatmode='fixed',
