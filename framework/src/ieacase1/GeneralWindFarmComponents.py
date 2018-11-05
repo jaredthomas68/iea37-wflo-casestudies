@@ -461,7 +461,7 @@ class WindDirectionPower(Component):
 
         # populate Jacobian dict
         J['wtPower%i' % direction_id, 'wtVelocity%i' % direction_id] = dwtPower_dwtVelocity
-        J['dir_power%i' % direction_id, 'wtVelocity%i' % direction_id] = np.reshape(ddir_power_dwtVelocity, [1, 16])
+        J['dir_power%i' % direction_id, 'wtVelocity%i' % direction_id] = np.reshape(ddir_power_dwtVelocity, [1, nTurbines])
 
         return J
 
