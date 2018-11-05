@@ -56,7 +56,7 @@ if __name__ == "__main__":
     prob.driver.options['optimizer'] = 'SNOPT'  # NSGA2, CONMIN, SNOPT, SLSQP, COBYLA
     # prob.driver.options['gradient method'] = 'snopt_fd'
     prob.driver.opt_settings['Major optimality tolerance'] = 1E-4
-    prob.driver.opt_settings['Verify level'] = 3
+    prob.driver.opt_settings['Verify level'] = 0
 
 
     # add design variables
@@ -64,8 +64,8 @@ if __name__ == "__main__":
     prob.driver.add_desvar('turbineY')
 
     # add constraints
-    prob.driver.add_constraint('sc', lower=np.zeros(int((nTurbines - 1.) * nTurbines / 2.)), scaler=1.0E-2)#, active_tol=2. * turb_diam**2)
-    prob.driver.add_constraint('boundaryDistances', lower=(np.zeros(1 * nTurbines)), scaler=1E-2)#, active_tol=2. * turb_diam )
+    prob.driver.add_constraint('sc', lower=np.zeros(int((nTurbines - 1.) * nTurbines / 2.)), scaler=1.0E-2, active_tol=2. * turb_diam**2)
+    prob.driver.add_constraint('boundaryDistances', lower=(np.zeros(1 * nTurbines)), scaler=1E-2, active_tol=2. * turb_diam )
 
     prob.driver.add_objective('obj', scaler=1E-3)
 
@@ -107,12 +107,12 @@ if __name__ == "__main__":
     toc = time()
     AEP = prob['AEP']
     # plt.figure()
-    ax[1].scatter(prob['turbineX'], prob['turbineY'], c='r')
-    boundary0 = plt.Circle([0., 0.], boundary_radius, facecolor='none', edgecolor='k')
-    boundary1 = plt.Circle([0., 0.], boundary_radius, facecolor='none', edgecolor='k')
-    ax[0].add_artist(boundary0)
-    ax[1].add_artist(boundary1)
-    plt.show()
+    # ax[1].scatter(prob['turbineX'], prob['turbineY'], c='r')
+    # boundary0 = plt.Circle([0., 0.], boundary_radius, facecolor='none', edgecolor='k')
+    # boundary1 = plt.Circle([0., 0.], boundary_radius, facecolor='none', edgecolor='k')
+    # ax[0].add_artist(boundary0)
+    # ax[1].add_artist(boundary1)
+    # plt.show()
     outfilename = 'case1_loc_turbs%i.txt' % nTurbines
     print(AEP)
     print('ndirs:', wind_dir.size)
@@ -120,11 +120,11 @@ if __name__ == "__main__":
     np.savetxt(outfilename, np.c_[prob['turbineX'], prob['turbineY']], header='X, Y, direction, dir power, aep, fcalls')
     print('direc, pow:', np.c_[prob['windDirections'], prob['dirPowers']])
     print('AEP:', prob['AEP']*1E-6)
-    print('AEP imp:' (prob['AEP']-))
+    print('AEP imp:', (prob['AEP']*1E-6 - 366941.57116)/366941.57116)
     print('Func calls:', np.sum(config.obj_func_calls_array + config.sens_func_calls_array))
     print('approx total time:', toc-tic)
     # Print AEP for each binned direction, with 5 digits behind the decimal.
-    print(np.array2string(AEP, precision=5, floatmode='fixed',
-                          separator=', ', max_line_width=62))
-    # Print AEP summed for all directions
-    print(np.around(np.sum(AEP), decimals=5))
+    # print(np.array2string(AEP, precision=5, floatmode='fixed',
+    #                       separator=', ', max_line_width=62))
+    # # Print AEP summed for all directions
+    # print(np.around(np.sum(AEP), decimals=5))
