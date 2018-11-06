@@ -18,6 +18,7 @@ if __name__ == "__main__":
     For Python .yaml capability, in the terminal type "pip install pyyaml".
     """
     input_val = sys.argv[1]
+    input_val = 64
     nTurbines = int(input_val)
     loc_file = 'iea37-ex%i.yaml' % nTurbines
 
