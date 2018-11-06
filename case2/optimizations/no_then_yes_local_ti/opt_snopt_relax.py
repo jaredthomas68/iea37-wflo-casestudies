@@ -808,8 +808,8 @@ if __name__ == "__main__":
             # run the problem
             mpi_print(prob, 'start %s run' % (MODELS[model]))
             tic = time.time()
-            # prob.run()
-            prob.run_once()
+            prob.run()
+            # prob.run_once()
             toc = time.time()
             # print(np.sum(config.obj_func_calls_array))
             # print(np.sum(config.sens_func_calls_array))
