@@ -244,9 +244,9 @@ if __name__ == "__main__":
     differentiable = True
 
     expansion_factors = np.array([3., 2.75, 2.5, 2.25, 2.0, 1.75, 1.5, 1.25, 1.0, 1.0])
-    # for expansion_factor in np.array([5., 4., 3., 2.75, 2.5, 2.25, 2.0, 1.75, 1.5, 1.25, 1.0]):
+    # expansion_factors = np.array([5., 4.75, 4.5, 4.25, 4., 3.75, 3.5, 3.25, 3., 2.75, 2.5, 2.25, 2.0, 1.75, 1.5, 1.25, 1.0, 1.0])
     # for expansion_factor in np.array([20., 15., 10., 5., 4., 3., 2.5, 1.25, 1.0]):
-    # expansion_factors = np.array([20., 10., 5., 2.5, 1.25, 1.0])
+    # expansion_factors = np.array([1.0])
 
     wake_combination_method = 1  # can be [0:Linear freestreem superposition,
     #  1:Linear upstream velocity superposition,
@@ -421,30 +421,28 @@ if __name__ == "__main__":
     with open(layout_directory + layout_file, 'r') as f:
         layout_data = yaml.safe_load(f)
 
-    turbineX_scaled = np.asarray(layout_data['definitions']['position']['items']['xc'])
-    turbineX = turbineX_scaled * rotor_diameter + rotor_diameter / 2.
-    turbineY_scaled = np.asarray(layout_data['definitions']['position']['items']['yc']) * rotor_diameter + rotor_diameter / 2.
-    turbineY = turbineY_scaled * rotor_diameter + rotor_diameter / 2.
+    turbineX = np.asarray(layout_data['definitions']['position']['items']['xc'])[0, :]
+    turbineY = np.asarray(layout_data['definitions']['position']['items']['yc'])[0, :]
 
-    turbineX_init = np.copy(turbineX[0, :])
-    turbineY_init = np.copy(turbineY[0, :])
+    turbineX_init = np.copy(turbineX)
+    turbineY_init = np.copy(turbineY)
 
     nTurbines = turbineX.size
 
     # create boundary specifications
-    boundary_radius = 0.5 * (rotor_diameter * 4000. / 126.4 - rotor_diameter)  # 1936.8
-    center = np.array([0.0, 0.0]) + rotor_diameter / 2.
+    boundary_radius = 900.
+    center = np.array([0.0, 0.0])
     start_min_spacing = 5.
     nVertices = 1
     boundary_center_x = center[0]
     boundary_center_y = center[1]
-    xmax = np.max(turbineX)
-    ymax = np.max(turbineY)
-    xmin = np.min(turbineX)
-    ymin = np.min(turbineY)
+    # xmax = np.max(turbineX)
+    # ymax = np.max(turbineY)
+    # xmin = np.min(turbineX)
+    # ymin = np.min(turbineY)
     boundary_radius_plot = boundary_radius + 0.5 * rotor_diameter
 
-    plot_round_farm(turbineX, turbineY, rotor_diameter, [boundary_center_x, boundary_center_y], boundary_radius,
+    plot_round_farm(turbineX_init, turbineY_init, rotor_diameter, [boundary_center_x, boundary_center_y], boundary_radius,
                     show_start=show_start)
     # quit()
     # initialize input variable arrays
@@ -559,7 +557,7 @@ if __name__ == "__main__":
         # prob.driver.options['gradient method'] = 'snopt_fd'
 
         # set optimizer options
-        prob.driver.opt_settings['Verify level'] = 1
+        prob.driver.opt_settings['Verify level'] = 0
         prob.driver.opt_settings['Major optimality tolerance'] = 1e-4
         prob.driver.opt_settings[
             'Print file'] = output_directory + 'SNOPT_print_multistart_%iturbs_%sWindRose_%idirs_%sModel_RunID%i.out' % (
@@ -639,10 +637,10 @@ if __name__ == "__main__":
     prob.driver.add_objective('obj', scaler=1E-3)
 
     # select design variables
-    prob.driver.add_desvar('turbineX', scaler=1E1, lower=np.zeros(nTurbines),
-                           upper=np.ones(nTurbines) * 3. * boundary_radius)
-    prob.driver.add_desvar('turbineY', scaler=1E1, lower=np.zeros(nTurbines),
-                           upper=np.ones(nTurbines) * 3. * boundary_radius)
+    prob.driver.add_desvar('turbineX', scaler=1E1, lower=np.zeros(nTurbines)-boundary_radius,
+                           upper=np.zeros(nTurbines)+boundary_radius)
+    prob.driver.add_desvar('turbineY', scaler=1E1, lower=np.zeros(nTurbines)-boundary_radius,
+                           upper=np.zeros(nTurbines)+boundary_radius)
 
     prob.root.ln_solver.options['single_voi_relevance_reduction'] = True
     prob.root.ln_solver.options['mode'] = 'rev'
@@ -720,6 +718,7 @@ if __name__ == "__main__":
     prob['cut_in_speed'] = cutInSpeeds
     ratedPowers = np.ones(nTurbines) * rated_power
     prob['rated_power'] = ratedPowers
+
     if wind_rose_file is "iea37cases":
         prob['use_power_curve_definition'] = True
         ratedWindSpeeds = np.ones(nTurbines) * rated_wind_speed
@@ -839,11 +838,11 @@ if __name__ == "__main__":
                 #                header="Initial AEP, Final AEP")
                 print(turbineX_init.shape, turbineY_init.shape, prob['turbineX'].shape, prob['turbineY'].shape)
                 if save_locations:
-                    np.savetxt(
-                        output_directory + '%s_multistart_locations_%iturbs_%sWindRose_%idirs_%s_run%i_EF%.3f_TItype%i.txt' % (
-                            opt_algorithm, nTurbs, wind_rose_file, size, MODELS[model], run_number, expansion_factor, ti_opt_method),
-                        np.c_[turbineX_init, turbineY_init, prob['turbineX'], prob['turbineY']],
-                        header="initial turbineX, initial turbineY, final turbineX, final turbineY")
+                    # np.savetxt(
+                    #     output_directory + '%s_multistart_locations_%iturbs_%sWindRose_%idirs_%s_run%i_EF%.3f_TItype%i.txt' % (
+                    #         opt_algorithm, nTurbs, wind_rose_file, size, MODELS[model], run_number, expansion_factor, ti_opt_method),
+                    #     np.c_[turbineX_init, turbineY_init, prob['turbineX'], prob['turbineY']],
+                    #     header="initial turbineX, initial turbineY, final turbineX, final turbineY")
 
                     with open(input_directory + "iea37-start9.yaml", 'r') as f:
                         loaded_yaml = yaml.safe_load(f)
