@@ -8,9 +8,9 @@ if __name__ == "__main__":
     # type = 'relax'
     relax = True
     nruns = 200
-    nturbs = 38
-    windrose = 'nantucket'
-    ndirs = 12
+    nturbs = 9
+    windrose = 'iea37cases'
+    ndirs = 16
 
     outfile = '%s_multistart_rundata_%iturbs_%sWindRose_%idirs_BPA_all.txt' % (opt_alg, nturbs, windrose, ndirs)
 

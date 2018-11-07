@@ -1,0 +1,55 @@
+definitions:
+  plant_energy:
+    description: energy production from simplified Bastankhah Gaussian wake model
+    properties:
+      annual_energy_production:
+        binned:
+        - [21937.944512165483, 20379.51263450251, 22191.630950652252, 24626.362754078702,
+          24433.945895280256, 21796.292961978954, 23384.167149978082, 26936.826464725553,
+          22098.650081217616, 18868.62917951707, 22304.91647878305, 24626.777348597585,
+          24434.09071982686, 22311.115344617767, 23378.48924058163, 26924.641914960514]
+        default: 207987225.69915092
+        description: binned and total (default) annual energy production for a wind
+          plant given a layout and binned wind rose
+        type: number
+        units: MWh
+      wake_model_selection:
+        description: wake model used to calculate AEP
+        items: ['byuflowlab/BastankhahAndPorteAgel, byuflowlab/wakeexchange/plantenergy']
+        type: algorithm
+      wind_resource_selection:
+        description: specific wind resource used to calculate AEP
+        properties:
+          items:
+          - {$ref: iea37-windrose.yaml}
+          type: array
+        type: object
+    type: object
+  position:
+    additionalItems: false
+    description: an array of x-coordinates [x0, x1, ...] and y-coordinates [y0, y1,
+      ...] of wind turbine positions in cartesian coordinates
+    items:
+      xc:
+      - [741.9256421710115, 273.9134642553596, -879.7250002125141, 794.0257369607531,
+        -101.71308561826308, -90.04027021373273, 64.73536093913545, 276.56856203107907,
+        -301.11039406954876]
+      yc:
+      - [509.4591192875535, 583.7882302538284, 189.96218760236198, -423.7120411069266,
+        894.2347648896981, -523.052266671655, -149.65215141051397, 222.5598071026207,
+        -848.1412294395662]
+    type: array
+    units: m
+  wind_plant:
+    description: specific plant design including turbine selection and placement
+    properties:
+      layout:
+        items:
+        - {$ref: '#/definitions/position'}
+        - {$ref: iea37-335mw.yaml}
+        type: array
+    type: object
+description: input file for the 16 turbine wind plant model for IEA Task 37 Combined
+  Case Study Template located at <https://github.com/IEAWindTask37/ontology/blob/develop/plant_energy_energy_convolution.yaml>
+input_format_version: 0
+title: IEA Wind Task 37 Combined Case Study 16 Turbine Farm
