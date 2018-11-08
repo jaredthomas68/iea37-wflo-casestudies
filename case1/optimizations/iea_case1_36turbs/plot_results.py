@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # input_directory = "../../input_files/layouts/"
     input_directory = "./output_files_snopt_wec/"
 
-    data = np.loadtxt(input_directory+'snopt_multistart_rundata_9turbs_iea37casesWindRose_16dirs_BPA_all.txt')
+    data = np.loadtxt(input_directory+'snoptwec_multistart_rundata_36turbs_iea37casesWindRose_16dirs_IEABPA_all.txt')
     ef = data[:, 1]
     id = data[:, 0]
 
@@ -55,8 +55,7 @@ if __name__ == "__main__":
     for i in np.arange(0, 200):
         run_time_sum[i] = np.sum(run_time[id==i])
     data = data[ef == 1, :]
-    ti_opt = data[:, 3]
-    data = data[ti_opt == 5, :]
+
 
     shift = 1
     id = data[:, 0]
@@ -83,9 +82,9 @@ if __name__ == "__main__":
     print "run 0 imp:", (end_aep[id==0]-orig_aep)/orig_aep
 
     EF = 1.0
-    TI = 5
+    TI = 0
     run_id = id[np.argmax(end_aep)]
-    layout_file = "snopt_multistart_locations_9turbs_iea37casesWindRose_16dirs_BPA_run%i_EF%.3f_TItype%i.yaml" % (layout_number, EF, TI)
+    layout_file = "snoptwec_multistart_locations_36turbs_iea37casesWindRose_16dirs_IEABPA_run%i_EF%.3f_TItype%i.yaml" % (layout_number, EF, TI)
     rotor_diameter = 130.
 
     with open(input_directory + layout_file, 'r') as f:
@@ -99,7 +98,12 @@ if __name__ == "__main__":
     # ef 3 to 1 1.4376982363067519
     # ef 5to1 by 0.25 imp = 1.4378647258529969
     # create boundary specifications
-    boundary_radius = 900.
+    if nTurbines == 16:
+        boundary_radius = 1300.
+    elif nTurbines == 36:
+        boundary_radius = 2000.
+    elif nTurbines == 64:
+        boundary_radius = 3000.
     center = np.array([0.0, 0.0])
     start_min_spacing = 5.
     nVertices = 1

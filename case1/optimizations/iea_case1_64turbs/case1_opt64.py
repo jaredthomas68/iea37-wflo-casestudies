@@ -48,7 +48,7 @@ if __name__ == "__main__":
     runID = int(sys.argv[1])
     nTurbines = 64
     layout_directory = '../../input_files/layouts/'
-    loc_file = 'iea37-ex%i.yaml' % nTurbines
+    loc_file = 'nTurbs%i_spacing5_layout_%i.yaml' % (nTurbines, runID)
 
     output_directory = 'output_files_snopt_wec/'
     opt_algorithm = 'snoptwec'
