@@ -92,7 +92,7 @@ if __name__ == "__main__":
     prob.driver = pyOptSparseDriver()
     prob.driver.options['optimizer'] = 'SNOPT'  # NSGA2, CONMIN, SNOPT, SLSQP, COBYLA
     # prob.driver.options['gradient method'] = 'snopt_fd'
-    prob.driver.opt_settings['Major optimality tolerance'] = 1E-0
+    prob.driver.opt_settings['Major optimality tolerance'] = 1E-4
     prob.driver.opt_settings['Verify level'] = 0
 
 
