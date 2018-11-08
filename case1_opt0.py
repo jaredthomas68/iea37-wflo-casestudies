@@ -1,11 +1,12 @@
 import numpy as np
 import matplotlib.pylab as plt
-import sys
+import sys, yaml
 from openmdao.api import Problem, pyOptSparseDriver
 from iea37aepcalc_wec import getTurbAtrbtYAML, getTurbLocYAML, getWindRoseYAML
 from ieacase1.OptimizationGroups import OptAEP
 from ieacase1.iea_bp_model_wrapper import iea_bp_wrapper, add_iea_bp_params_IndepVarComps
 from ieacase1 import config
+
 
 from time import time
 if __name__ == "__main__":
@@ -18,7 +19,6 @@ if __name__ == "__main__":
     For Python .yaml capability, in the terminal type "pip install pyyaml".
     """
     input_val = sys.argv[1]
-    input_val = 64
     nTurbines = int(input_val)
     loc_file = 'iea37-ex%i.yaml' % nTurbines
 
@@ -129,3 +129,46 @@ if __name__ == "__main__":
     #                       separator=', ', max_line_width=62))
     # # Print AEP summed for all directions
     # print(np.around(np.sum(AEP), decimals=5))
+
+    with open(input_directory + "iea37-start%i.yaml" %(nTurbines), 'r') as f:
+        loaded_yaml = yaml.safe_load(f)
+
+    loaded_yaml['definitions']['position']['items']['xc'] = np.matrix.tolist(
+        np.matrix(prob['turbineX']))
+    loaded_yaml['definitions']['position']['items']['yc'] = np.matrix.tolist(
+        np.matrix(prob['turbineY']))
+
+    loaded_yaml['definitions']['plant_energy']['properties']['annual_energy_production'][
+        'binned'] = np.matrix.tolist(np.matrix(prob['dirPowers'] * 1E-3))
+    loaded_yaml['definitions']['plant_energy']['properties']['annual_energy_production']['default'] = \
+        float(prob['AEP'] * 1E-3)
+
+    loaded_yaml['definitions']['plant_energy']['properties']['wake_model_selection']['items'][
+        0] = 'byuflowlab/BastankhahAndPorteAgel, byuflowlab/wakeexchange/plantenergy'
+
+    with open(
+            output_directory + '%s_multistart_locations_%iturbs_%sWindRose_%idirs_%s_run%i_EF%.3f_TItype%i.yaml' % (
+                    opt_algorithm, nTurbs, wind_rose_file, size, MODELS[model], run_number,
+                    expansion_factor, ti_opt_method),
+            "w") as f:
+        yaml.dump(loaded_yaml, f)
+# if save_time:
+#     np.savetxt(output_directory + '%s_multistart_time_%iturbs_%sWindRose_%idirs_%s_run%i_EF%.3f.txt' % (
+#         opt_algorithm, nTurbs, wind_rose_file, size, MODELS[model], run_number, expansion_factor),
+#                np.c_[run_time],
+#                header="run time")
+    output_file = output_directory + '%s_multistart_rundata_%iturbs_%sWindRose_%idirs_%s_run%i.txt' \
+                  % (opt_algorithm, nTurbs, wind_rose_file, size, MODELS[model], run_number)
+    f = open(output_file, "a")
+
+    if i == 0:
+        header = "run number, exp fac, ti calc, ti opt, aep init calc (kW), aep init opt (kW), " \
+                 "aep run calc (kW), aep run opt (kW), run time (s), obj func calls, sens func calls"
+    else:
+        header = ''
+
+    np.savetxt(f, np.c_[run_number, expansion_factor, ti_calculation_method, ti_opt_method,
+                        AEP_init_calc, AEP_init_opt, AEP_run_calc, AEP_run_opt, run_time,
+                        config.obj_func_calls_array[0], config.sens_func_calls_array[0]],
+               header=header)
+    f.close()
