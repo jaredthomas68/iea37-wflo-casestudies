@@ -80,18 +80,18 @@ def plot_round_farm(turbineX, turbineY, rotor_diameter, boundary_center, boundar
         plt.show()
 
 
-def round_farm_random_start(rotor_diameter, center, radius, min_spacing=2., min_spacing_random=1.):
+def round_farm_random_start(nTurbines, rotor_diameter, center, radius, min_spacing=2., min_spacing_random=1.):
     # normalize inputs
     radius /= rotor_diameter
     center /= rotor_diameter
 
     # calculate how many circles can be fit in the wind farm area
-    nCircles = np.floor(radius / min_spacing)
-    radii = np.linspace(radius / nCircles, radius, nCircles)
-    alpha_mins = 2. * np.arcsin(min_spacing / (2. * radii))
-    nTurbines_circles = np.floor(2. * np.pi / alpha_mins)
+    # nCircles = np.floor(radius / min_spacing)
+    # radii = np.linspace(radius / nCircles, radius, nCircles)
+    # alpha_mins = 2. * np.arcsin(min_spacing / (2. * radii))
+    # nTurbines_circles = np.floor(2. * np.pi / alpha_mins)
 
-    nTurbines = int(np.sum(nTurbines_circles)) + 1
+    # nTurbines = int(np.sum(nTurbines_circles)) + 1
 
     turbineX = np.zeros(nTurbines)
     turbineY = np.zeros(nTurbines)
@@ -177,7 +177,7 @@ def generate_round_layouts(nLayouts, rotor_diameter, nTurbines, farm_center=0., 
     if nLayouts > 1:
         for L in np.arange(1, nLayouts):
             print "Generating Layout %i" %L
-            turbineX, turbineY = round_farm_random_start(np.copy(rotor_diameter), np.copy(farm_center),
+            turbineX, turbineY = round_farm_random_start(nTurbines, np.copy(rotor_diameter), np.copy(farm_center),
                                                          np.copy(farm_radius), float(np.copy(base_spacing)),
                                                          min_spacing_random=min_spacing)
 
@@ -202,17 +202,24 @@ def generate_round_layouts(nLayouts, rotor_diameter, nTurbines, farm_center=0., 
 
 if __name__ == "__main__":
 
+    nLayouts = 4
+    nTurbines = 16
+    show_layouts = True
+    save_layouts = False
+
     rotor_diameter = 130.0
 
-    boundary_radius = 1300.0 #m
     center = np.array([0.0, 0.0])
     start_min_spacing = 5.
 
-    nLayouts = 200
-    nTurbines = 64
+    if nTurbines == 16:
+        boundary_radius = 1300.
+    elif nTurbines == 36:
+        boundary_radius = 2000.
+    elif nTurbines == 64:
+        boundary_radius = 3000.
 
-    show_layouts = False
-    save_layouts = True
+
 
     # turbineX, turbineY = round_farm(np.copy(rotor_diameter), np.copy(center), np.copy(boundary_radius),
     #                                 min_spacing=start_min_spacing)

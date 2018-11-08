@@ -165,7 +165,7 @@ if __name__ == "__main__":
                 np.matrix(prob['turbineY']))
 
             loaded_yaml['definitions']['plant_energy']['properties']['annual_energy_production'][
-                'binned'] = np.matrix.tolist(np.matrix(prob['dirPowers'] * 1E-3))
+                'binned'] = np.matrix.tolist(np.matrix(prob['dirPowers']*24*365*wind_freq*1E-6))
             loaded_yaml['definitions']['plant_energy']['properties']['annual_energy_production']['default'] = \
                 float(prob['AEP'] * 1E-6)
 

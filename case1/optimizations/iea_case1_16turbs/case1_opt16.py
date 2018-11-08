@@ -133,7 +133,9 @@ if __name__ == "__main__":
 
     prob.run_once()
     AEP_init_calc = AEP_init_opt = prob['AEP']
-
+    # print(AEP_init_calc*1E-6)
+    # print(prob['dirPowers']*24*365*wind_freq*1E-6)
+    # quit()
     tic = time()
     for rel_fac in rel_factors:
         prob.driver.opt_settings['Print file'] = output_directory+'SNOPT_print_case1_turbs%i_runID%i_rel%.2f.out' % (nTurbines, runID, rel_fac)
@@ -161,7 +163,7 @@ if __name__ == "__main__":
                 np.matrix(prob['turbineY']))
 
             loaded_yaml['definitions']['plant_energy']['properties']['annual_energy_production'][
-                'binned'] = np.matrix.tolist(np.matrix(prob['dirPowers'] * 1E-3))
+                'binned'] = np.matrix.tolist(np.matrix(prob['dirPowers']*24*365*wind_freq*1E-6))
             loaded_yaml['definitions']['plant_energy']['properties']['annual_energy_production']['default'] = \
                 float(prob['AEP'] * 1E-6)
 
