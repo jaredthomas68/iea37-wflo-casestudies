@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --time=15:00:00   # walltime
-#SBATCH --ntasks=4   # number of processor cores per sub-job(i.e. tasks)
+#SBATCH --ntasks=1   # number of processor cores per sub-job(i.e. tasks)
 #SBATCH --mem-per-cpu=1G  # memory per CPU core
 #SBATCH -J "36 turbs  iea37 case 1"   # job name
 #SBATCH --mail-user=jaredthomas68@gmail.com   # email address
@@ -12,4 +12,4 @@
 
 echo ${SLURM_ARRAY_TASK_ID}
 
-mpirun python case1_opt36.py ${SLURM_ARRAY_TASK_ID}
+python case1_opt36.py ${SLURM_ARRAY_TASK_ID}
