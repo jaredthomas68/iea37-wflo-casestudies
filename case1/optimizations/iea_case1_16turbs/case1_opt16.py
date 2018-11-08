@@ -82,7 +82,7 @@ if __name__ == "__main__":
     elif nTurbines == 64:
         boundary_radius = 3000.
 
-    prob = Problem(root=OptAEP(nTurbines=nTurbines, nDirections=nDirections, wake_model=iea_bp_wrapper,
+    prob = Problem(impl=impl, root=OptAEP(nTurbines=nTurbines, nDirections=nDirections, wake_model=iea_bp_wrapper,
                                use_rotor_components=False, nVertices=1, differentiable=True,
                                params_IdepVar_func=add_iea_bp_params_IndepVarComps, params_IndepVar_args={},
                                rec_func_calls = True))
