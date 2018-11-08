@@ -136,8 +136,12 @@ if __name__ == "__main__":
 
     tic = time()
     for rel_fac in rel_factors:
-        prob.driver.opt_settings['Print file'] = output_directory+'SNOPT_print_case1_turbs%i_rel%.2f.out' % (nTurbines, rel_fac)
-        prob.driver.opt_settings['Summary file'] = output_directory+'SNOPT_summary_case1_turbs%i_rel%.2f.out' % (nTurbines, rel_fac)
+        prob.driver.opt_settings['Print file'] = output_directory + 'SNOPT_print_case1_turbs%i_runID%i_rel%.2f.out' % (
+        nTurbines, runID, rel_fac)
+        prob.driver.opt_settings[
+            'Summary file'] = output_directory + 'SNOPT_summary_case1_turbs%i_runID%i_rel%.2f.out' % (
+        nTurbines, runID, rel_fac)
+
         prob['model_params:wec'] = rel_fac
         print('starting rel fac:', rel_fac)
         tictic = time()
